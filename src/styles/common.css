@@ -1,0 +1,273 @@
+body {
+    background-image: url(back.png);
+}
+
+.specialLink {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+
+    text-decoration: none;
+    color: black;
+
+    max-width: 120px;
+}
+
+.warning {
+    color: #FF4136;
+
+    margin: 15px auto;
+
+    display: block;
+    text-align: center;
+}
+
+.inputs{
+    margin: 20px auto;
+
+    max-width: 300px;
+    min-width: 300px;
+}
+
+.inputs input{
+    max-width: 80px;
+    min-width: 80px;
+}
+
+.inputs span{
+    text-align: left;
+    max-width: 80px;
+    min-width: 80px;
+}
+
+.title{
+    margin: 15px auto;
+
+    display: block;
+    text-align: center;
+
+    width: 250px;
+}
+
+
+.header{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+    border: solid #2c3e50;
+}
+
+.header{
+    padding: 10px;
+
+    border: solid #2c3e50;
+}
+
+.header #authors{
+    text-align: center;
+}
+
+.header #variant{
+    text-align: right;
+}
+
+.header #userName{
+    height: 30px;
+    width: 250px;
+    padding-left: 35px;
+}
+
+.header #logoutButton{
+    height: 30px;
+    width: 80px;
+}
+
+#chart{
+    position: relative;
+    left: 30px;
+    border: solid 1px #2c3e50;
+    width: 300px;
+    height: 300px;
+    margin-top: 15px;
+    margin-left: 10px;
+
+    margin-bottom: -50px;
+}
+
+#dataInput{
+    position: relative;
+    top: -267px;
+    right: -350px;
+
+    width: 300px;
+    margin-top: 35px;
+    margin-left: 10px;
+
+    margin-bottom: -120px;
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+.inputField{
+    width: 300px;
+    height: 30px;
+    margin-left: 60px;
+    margin-top: 5px;
+}
+
+.inputField input{
+    width: 140px;
+}
+
+.inputField select{
+    width: 155px;
+}
+
+#dotButton{
+    width: 80px;
+    margin-top: 20px;
+    margin-left: 180px;
+    margin-bottom: 10px;
+}
+
+#tableTitle{
+    background-color: #a1a1a1;
+    font-weight: bold;
+}
+#table {
+    text-align: center;
+    border-collapse: collapse;
+}
+#table tr td {
+    border: 1px solid black;
+    width: 700px;
+}
+#table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+#table tr:hover {
+    background-color: #f5f5f5;
+}
+#table #tableTitle:hover {
+    background-color: #a1a1a1;
+}
+
+/* pc */
+
+@media only screen and (min-width: 1149px) {
+    .container {
+        min-width: 1100px;
+        max-width: 1100px;
+    }
+
+    .header #spacer{
+        width: 700px;
+    }
+
+    .warning{
+        width: 700px;
+    }
+
+    #chart{
+        position: relative;
+        left: 230px;
+    }
+
+    #dataInput{
+        position: relative;
+        top: -267px;
+        right: -550px;
+    }
+
+}
+
+/* tab */
+
+@media only screen and (max-width: 1148px) and (min-width: 762px) {
+    .container {
+        min-width: 700px;
+        max-width: 700px;
+    }
+
+
+    .header #spacer{
+        width: 300px;
+    }
+
+    .warning{
+        width: 650px;
+    }
+
+    #chart{
+        position: relative;
+        left: 25px;
+    }
+
+    #dataInput{
+        position: relative;
+        top: -267px;
+        right: -350px;
+    }
+
+}
+
+/* mobile */
+
+@media only screen and (max-width: 761px) {
+    .container {
+        min-width: 370px;
+        max-width: 370px;
+    }
+
+
+    .header #authors{
+        text-align: left;
+        padding-left: 15px;
+    }
+
+    .header #variant{
+        text-align: right;
+    }
+
+    .header #userName{
+        height: 30px;
+        width: 250px;
+        padding-left: 15px;
+    }
+
+    .header #spacer{
+        width: 40px;
+    }
+
+    .warning{
+        width: 350px;
+    }
+
+    #chart{
+        position: relative;
+        left: 25px;
+        border: solid 1px #2c3e50;
+        width: 300px;
+        height: 300px;
+        margin-top: 15px;
+        margin-left: 10px;
+    }
+
+    #dataInput{
+        position: relative;
+        top: 50px;
+        right: -25px;
+
+        border: solid 1px #2c3e50;
+        width: 300px;
+        margin-top: 15px;
+        margin-left: 10px;
+
+        margin-bottom: 70px;
+    }
+}
