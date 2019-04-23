@@ -13,7 +13,7 @@ class Chart extends Component{
 
   constructor(props) {
     super(props);
-
+      // in chart "palettecolors": "111111"
       this.state = {
           timeseriesDs: {
               type: 'timeseries',

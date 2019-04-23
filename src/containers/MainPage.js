@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import WarningComponent from "../components/WarningComponent";
 import {LOGIN_PAGE} from "../Views";
 import history from "../History";
-import Chart from "../components/Chart";
+// import Chart from "../components/Chart";
 
 export default class MainPage extends React.Component {
   render(){
@@ -15,7 +15,7 @@ export default class MainPage extends React.Component {
             <WarningComponent/>
           </div>
         }
-        <Chart/>
+        {/*<Chart/>*/}
       </div>
     );
   }

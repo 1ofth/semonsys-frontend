@@ -39,32 +39,32 @@ export function loadData() {
 }
 export function login(login, password) {
     return (dispatch) => {
-        let data = new URLSearchParams();
-        data.append('login', login);
-        data.append('password', password);
-
-        fetch('http://185.43.5.178/server/rest/login', {
-            method: 'POST',
-            body: data,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'include'
-
-        }).then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-            .then(response => {
-                console.log(response);
-                console.log(JSON.stringify(response));
+        // let data = new URLSearchParams();
+        // data.append('login', login);
+        // data.append('password', password);
+        //
+        // fetch('http://185.43.5.178/server/rest/login', {
+        //     method: 'POST',
+        //     body: data,
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded'
+        //     },
+        //     credentials: 'include'
+        //
+        // }).then(response => {
+        //     if (response.ok) {
+        //         return response.json();
+        //     }
+        //     throw new Error('Network response was not ok.');
+        // })
+        //     .then(response => {
+        //         console.log(response);
+        //         console.log(JSON.stringify(response));
                 window.sessionStorage.setItem('isAuthorised', 'true');
                 window.sessionStorage.setItem('login', login);
-                window.sessionStorage.setItem('accessToken', response.accessToken);
-                window.sessionStorage.setItem('refreshToken', response.refreshToken);
-                window.sessionStorage.setItem('expires_in', response.expires_in);
+                // window.sessionStorage.setItem('accessToken', response.accessToken);
+                // window.sessionStorage.setItem('refreshToken', response.refreshToken);
+                // window.sessionStorage.setItem('expires_in', response.expires_in);
 
                 history.push(MAIN_PAGE);
 
@@ -72,13 +72,13 @@ export function login(login, password) {
                     type: LOGIN_SUCCEED,
                     payload: login
                 });
-            })
-            .catch(error => {
-                dispatch({
-                    type: WARNING,
-                    payload: 'There has been a problem while logging: ' + error.message
-                });
-            });
+    //         })
+    //         .catch(error => {
+    //             dispatch({
+    //                 type: WARNING,
+    //                 payload: 'There has been a problem while logging: ' + error.message
+    //             });
+    //         });
     }
 }
 
