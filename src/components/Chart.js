@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {bindActionCreators} from "redux";
-import { loadData, makeWarning} from "../store/Actions";
+import { loadDataBad, makeWarning} from "../store/Actions";
 import connect from "react-redux/es/connect/connect";
 
 import FusionCharts from 'fusioncharts';
@@ -102,7 +102,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         makeWarning : bindActionCreators(makeWarning, dispatch),
-        loadDots: bindActionCreators(loadData, dispatch)
+        loadDots: bindActionCreators(loadDataBad, dispatch)
     }
 };
 

@@ -2,7 +2,7 @@ import {
     LOGIN_SUCCEED,
     LOGOUT,
     REGISTRATION_COMPLETED,
-    REGISTRATION_FAILED,
+    REGISTRATION_FAILED, SERVERS_LOADED,
     WARNING
 } from "./States";
 import history from "../History";
@@ -14,7 +14,8 @@ export function makeWarning(message) {
         payload: message
     }
 }
-export function loadData() {
+
+export function loadDataBad() {
     return (dispatch) => {
         fetch('http://185.43.5.178/server/rest/secured/data/composite/after?server_id=1&identifier=Process 5542&time=0', {
             method: 'GET',
@@ -37,6 +38,7 @@ export function loadData() {
             });
     }
 }
+
 export function login(login, password) {
     return (dispatch) => {
         // let data = new URLSearchParams();
@@ -60,25 +62,25 @@ export function login(login, password) {
         //     .then(response => {
         //         console.log(response);
         //         console.log(JSON.stringify(response));
-                window.sessionStorage.setItem('isAuthorised', 'true');
-                window.sessionStorage.setItem('login', login);
-                // window.sessionStorage.setItem('accessToken', response.accessToken);
-                // window.sessionStorage.setItem('refreshToken', response.refreshToken);
-                // window.sessionStorage.setItem('expires_in', response.expires_in);
+        window.sessionStorage.setItem('isAuthorised', 'true');
+        window.sessionStorage.setItem('login', login);
+        // window.sessionStorage.setItem('accessToken', response.accessToken);
+        // window.sessionStorage.setItem('refreshToken', response.refreshToken);
+        // window.sessionStorage.setItem('expires_in', response.expires_in);
 
-                history.push(MAIN_PAGE);
+        history.push(MAIN_PAGE);
 
-                dispatch({
-                    type: LOGIN_SUCCEED,
-                    payload: login
-                });
-    //         })
-    //         .catch(error => {
-    //             dispatch({
-    //                 type: WARNING,
-    //                 payload: 'There has been a problem while logging: ' + error.message
-    //             });
-    //         });
+        dispatch({
+            type: LOGIN_SUCCEED,
+            payload: login
+        });
+        //         })
+        //         .catch(error => {
+        //             dispatch({
+        //                 type: WARNING,
+        //                 payload: 'There has been a problem while logging: ' + error.message
+        //             });
+        //         });
     }
 }
 
@@ -145,6 +147,32 @@ export function refreshTokens() {
                 });
             });
 
+    }
+}
+
+export function loadData(url) {
+    return (dispatch) => {
+        // fetch(url, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+        //     }
+        // }).then((response) => {
+        //     return response.json()
+        // }).then((json) => {
+        let json = [{id:1,name:"My first server",description:"Just server",ip:"190.23.24.32",port:1234,activated:true},
+            {id:2,name:"My second server",description:"Just not activated server",ip:"140.3.24.18",port:5678,activated:false}];
+       console.log(url);
+        dispatch({
+                type: SERVERS_LOADED,
+                payload: json
+            });
+        // }).catch(error => {
+        //     dispatch({
+        //         type: WARNING,
+        //         payload: 'There has been a problem while fetching: ' + error.message
+        //     });
+        // });
     }
 }
 

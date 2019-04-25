@@ -21,3 +21,7 @@ export const UPDATE_CHART = 'UPDATE_CHART';
 export const UPDATE_CHART_FINISHED = 'UPDATE_CHART_FINISHED';
 // for table
 export const DOTS_LOADED = 'DOTS_LOADED';
+
+
+export const SERVERS_LOADED = 'SERVERS_LOADED';
+export const RAM_DATA_LOADED = 'RAM_DATA_LOADED';

@@ -4,7 +4,6 @@ import logo from "../styles/logo.png";
 import {MAIN_PAGE, path} from "../Views";
 import {
     Container,
-    Dropdown,
     Image,
     Menu
 } from 'semantic-ui-react'
@@ -18,15 +17,6 @@ class HeaderMenu extends Component {
                         <Image size='mini' src={logo} style={{ marginRight: '1.5em' }} />
                         Semonsys
                     </Menu.Item>
-
-                    <Dropdown as={Link} to={path + MAIN_PAGE + '/places'}
-                              item simple text='My servers'>
-                        <Dropdown.Menu>
-                            <Dropdown.Item  >List Item</Dropdown.Item>
-                            <Dropdown.Item>List Item</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-
 
                     <Menu.Item  as={Link} to={path + MAIN_PAGE + '/venues'}>
                         {window.sessionStorage.getItem('login')}
