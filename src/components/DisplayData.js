@@ -1,11 +1,13 @@
-import React from 'react'
-import {Accordion, Icon, Segment } from 'semantic-ui-react'
+import React from 'react';
+import '../styles/accord.css';
+import {Accordion} from 'semantic-ui-react'
 import {bindActionCreators} from "redux";
-import {loadData, makeWarning} from "../store/Actions";
+import {loadData} from "../store/Actions";
 import connect from "react-redux/es/connect/connect";
-import {Link} from "react-router-dom";
-import {MAIN_PAGE, path} from "../Views";
+import LazySubAccordion from "./LazySubAccordion";
+import TableComponent from "../components/TableComponent";
 
+let toSubscribe = [];
 class DisplayData extends React.Component {
     constructor(props) {
         super(props);
@@ -13,71 +15,169 @@ class DisplayData extends React.Component {
         this.state = {
             activeIndex: 0,
         };
-
-        this.handleClick = this.handleClick.bind(this);
     }
-    // вызывается после каждой отрисовки при обновлении
-    // componentDidUpdate() {
-    //     this.props.loadData(this.props.url);
-    // }
-    // вызывается один раз после первой отрисовки
+
+    // accept array to iterate through !!!!
+    // returns array of panels suitable to Accordion
+    /*
+    */
+    SubAccordionPanels = [
+        {
+            title: 'Sub Accordion 1',
+            content: {content: 'asaasa', key: 'sa1-content'},
+            key: 'sub-accordion-1'
+        }, {
+            title: 'Sub Accordion 2',
+            content: {content: 'asaasa', key: 'sa2-content'},
+            key: 'sub-accordion-2'
+        }, {
+            title: 'Sub Accordion 3',
+            content: {content: 'asaasa', key: 'sa3-content'},
+            key: 'sub-accordion-3'
+        }
+    ];
+
+    generateContent = (data) => {
+        let rows = [];
+        for (let i = 0; i < data.length; i++) {
+            rows.push({name: data[i].t, value: data[i].p.v, observable: data[i].m});
+        }
+        return <TableComponent headerRow={['Name', 'Value', 'Chart']} tableData={rows}/>
+    };
+
     componentDidMount() {
-        if (this.props.servers === undefined) {
-            this.props.loadData(this.props.url);
+        if (this.props.dataGroups === undefined) {
+            this.props.loadData('http://185.43.5.178/server/rest/secured/group', 'dataGroups');
         }
     }
+
+    /*
+    'http://185.43.5.178/server/rest/secured/server'
+
+     /rest/secured/group
+
+     http://185.43.5.178/server/rest/secured/data/sing/last?group=название группы&server=имя сервера
+     /rest/secured/data/comp/identifiers?group=...&server=...
+
+     http://185.43.5.178/server/rest/secured/data/comp/last?group=...&server=...&identifier=..
+     */
+    showImage = (url, event, data) => {
+        console.log('thread is on show func e e ');
+        for (let i = 0; i < url.length; i++) {
+            let substitution;
+            if (url[i].search('identifier=') !== -1) {
+                substitution = url[i].replace('identifier=', `identifier=${data.content}`);
+            } else {
+                substitution = url[i].replace('group=', `group=${data.content}`);
+            }
+            substitution = substitution.replace('server=', `server=${this.props.match.params.serverName}`);
+            setTimeout(() => {
+                // if (this.props[data.content] === undefined) {
+                    this.props.loadData(substitution, data.content);
+            }, 1000);
+        }
+        console.log('ta');
+    };
+
+    generatePanels = (initial) => {
+        let lines = [];
+        // marked to remove
+        if (initial === undefined)
+            return lines;
+        // array  / undefined
+        // object can represent both tab content and tab name
+        for (let i = 0; i < initial.length; i++) {
+            let dataGroup = this.props[initial[i].n];
+            let grp = initial[i].n;
+            toSubscribe.push(grp);
+            console.log(dataGroup);
+            let accordionContent;
+            let rows = [];
+            let subAccordionPanel;
+            if (Array.isArray(dataGroup)) {
+                // х*ардкодим
+                /*
+                    store:
+                        data_groups : [{n: 'OS', d: 'описание'}, ....],
+                            os
+                                os : [ {p: {}, t: 'name', m: false}, {p: {}, t: 'arch', m: false}, [{n: 'Process 1', d: 'описание'}, 'Process 12', 'Process 21']]
+
+                                    process 1: [ {p: {}, t: 'mem', m: true}, {p: {}, t: 'cpu', m: true}]
+
+                     */
+                for (let i = 0; i < dataGroup.length; i++) {
+                    if (!Array.isArray(dataGroup[i])) {
+                        rows.push({name: dataGroup[i].t, value: dataGroup[i].p.v, observable: dataGroup[i].m});
+                    } else {
+                        subAccordionPanel = <Accordion.Accordion onTitleClick={this.showImage.bind(this, [
+                            `http://185.43.5.178/server/rest/secured/data/comp/last?group=${grp}&server=&identifier=`
+                        ])}
+                                                                 className="no-padding"
+                                                                 panels={this.generatePanels(dataGroup[i])}
+                        />;
+                    }
+                }
+                accordionContent = <div className="indent">
+                    <TableComponent headerRow={['Name', 'Value', 'Chart']} tableData={rows}/>
+                    {subAccordionPanel}
+                </div>;
+            } else {
+                accordionContent = <div className="indent">
+                    <LazySubAccordion
+                        style={{marginLeft: "20px"}}
+                        className="no-padding"
+                        panels={this.SubAccordionPanels}
+                    />
+                </div>;
+            }
+
+            lines.push({
+                title: initial[i].n,
+                content: {content: accordionContent, key: initial[i].n + ' ' + i},
+                key: initial[i].n
+            });
+
+        }
+        return lines;
+    };
 
     render() {
-        // to make all tabs collapsed by default you could use this shit:
-        // const {activeIndex} = this.state;
-        let lines = [];
-        if (this.props.servers === undefined) return null;
-        for (let i = 0; i < this.props.servers.length; i++) {
-            let serv = this.props.servers[i];
-
-            let out = '';
-            for (const prop in serv) {
-                if (serv.hasOwnProperty(prop))
-                    out = out.concat(`${prop}: ${serv[prop]}`).concat("\n");
-            }
-            lines.push([
-                    <Accordion.Title active={this.state.activeIndex === i} index={i} key={i+1}  onClick={this.handleClick}>
-                        <Icon name='dropdown'/>
-                        <Link  to={path + MAIN_PAGE + `/server/${serv.id}`}>{serv.name}</Link>
-
-                    </Accordion.Title>,
-                    <Accordion.Content key={i * 1001} active={this.state.activeIndex === i}>
-                        <Segment>{out}</Segment>
-                        {/*possible here <Divider/>*/}
-                    </Accordion.Content>
-                ]
-            );
-        }
-
         return (
-            <Accordion styled>
-                {lines}
-                {this.props.match.params.id}
-            </Accordion>
-    )
+            <Accordion styled fluid onTitleClick={this.showImage.bind(this, [
+                `http://185.43.5.178/server/rest/secured/data/sing/last?group=&server=`,
+                'http://185.43.5.178/server/rest/secured/data/comp/identifiers?group=&server='
+            ])}
+                       defaultActiveIndex={0}
+                       panels={this.generatePanels(this.props.dataGroups)}
+            />
+        )
     }
-    handleClick = (e, titleProps) => {
-        const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
-        this.setState({activeIndex: newIndex})
-    };
+
 }
 
-const mapStateToProps = (state) => {
-    return {
-        servers: state.servers
-    };
+const mapStateToProps = (store) => {
+    let temp = {};
+    for (let i = 0; i < toSubscribe.length; i++) {
+        temp[toSubscribe[i]] = store[toSubscribe[i]];
+    }
+    temp.dataGroups = store.dataGroups;
+     toSubscribe = [];
+    return temp;
 };
+
+// const mapStateToProps = (state) => {
+//     console.log('mapStateToProps DisplayData');
+//
+//     return {
+//         servers: state.servers,
+//         OS: state.OS,
+//         dataGroups: state.dataGroups,
+//         Test: state.Test
+//     };
+// };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        makeWarning: bindActionCreators(makeWarning, dispatch),
         loadData: bindActionCreators(loadData, dispatch)
     }
 };

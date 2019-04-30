@@ -6,8 +6,8 @@ import {
 import {Route, Switch} from "react-router-dom";
 import HeaderMenu from "../components/HeaderMenu";
 import HomePage from '../containers/HomePage';
-import DataPage from "./DataPage";
-const Venues = () => <h1>Venues</h1>;
+import AnotherDataPage from "./AnotherDataPage";
+import DisplayData from "../components/DisplayData";
 
 export default class MainView extends React.Component {
     render() {
@@ -19,8 +19,8 @@ export default class MainView extends React.Component {
                     <Switch>
                         <Route path={this.props.match.path} exact render={(props) =>
                             <HomePage {...props} url={'http://185.43.5.178/server/rest/secured/server'} />} />
-                        <Route path={this.props.match.path + '/server/:id'} component={DataPage}/>
-                        <Route path={this.props.match.path + '/venues'} component={Venues}/>
+                        <Route path={this.props.match.path + '/server/:serverName'} component={DisplayData}/>
+                        <Route path={this.props.match.path + '/venues'} component={AnotherDataPage}/>
                     </Switch>
                 </Container>
             </div>

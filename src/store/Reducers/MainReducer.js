@@ -9,7 +9,7 @@ import {
     UPDATE_CHART,
     UPDATE_CHART_FINISHED,
     WARNING,
-    RAM_DATA_LOADED
+    RAM_DATA_LOADED, DATA_LOADED, COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED
 } from "../States";
 
 export default function MainReducer(state = initialState, action) {
@@ -69,6 +69,31 @@ export default function MainReducer(state = initialState, action) {
             temp = temp.concat(action.payload);
 
             return {...state, message: '', dots: temp};
+        }
+
+        case DATA_LOADED: {
+            let temp = [];
+            if (state[action.group] !== undefined) {
+                temp = state[action.group];
+            }
+
+            temp = temp.concat(action.payload);
+
+            return {...state, [action.group]: temp};
+        }
+
+        case SINGLE_DATA_LOADED: {
+            return {...state, [action.group]: action.payload};
+        }
+        case COMPOSITE_DATA_LOADED: {
+            let temp = [];
+            if (state[action.group] !== undefined) {
+                temp = state[action.group];
+            }
+
+            temp = temp.concat(action.payload);
+
+            return {...state, [action.group]: temp};
         }
         case SERVERS_LOADED: {
             return {...state, servers: action.payload};
