@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from "redux";
-import {logout, makeWarning, refreshTokens} from "../store/Actions";
+import {logout, makeWarning} from "../store/Actions";
 import history from '../History';
 
 class Header extends React.Component {
@@ -15,10 +15,7 @@ class Header extends React.Component {
         }
     }
 
-    logOut = () => event => {
-        if (Math.round((new Date()).getTime() / 1000) >= window.sessionStorage.getItem('expires_in')) {
-            this.props.refreshTokens();
-        }
+    logOut = () => {
         this.props.logout();
         window.sessionStorage.setItem('isAuthorised', 'false');
         window.sessionStorage.setItem('login', '');
@@ -74,8 +71,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         makeWarning: bindActionCreators(makeWarning, dispatch),
-        logout: bindActionCreators(logout, dispatch),
-        refreshTokens: bindActionCreators(refreshTokens, dispatch)
+        logout: bindActionCreators(logout, dispatch)
     }
 };
 

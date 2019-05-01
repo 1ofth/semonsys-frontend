@@ -13,9 +13,8 @@ import {LOGIN_PAGE, MAIN_PAGE, path, REGISTRATION_PAGE} from "./Views";
 
 import LoginPage from "./containers/LoginPage";
 import RegisterPage from './containers/RegisterPage';
-import MainPage from './containers/MainPage';
 import NotFoundPage from './containers/NotFoundPage';
-import MainView from './containers/MainView';
+import MainPage from './containers/MainPage';
 
 import MainReducer from "./store/Reducers/MainReducer";
 
@@ -36,7 +35,7 @@ ReactDOM.render(
                 <Route exact path={path} component={MainPage}/>
                 <Route path={path + LOGIN_PAGE} component={LoginPage}/>
                 <Route path={path + REGISTRATION_PAGE} component={RegisterPage}/>
-                <Route path={path + MAIN_PAGE} component={MainView}/>
+                <Route path={path + MAIN_PAGE} component={MainPage}/>
                 <Route component={NotFoundPage}/>
             </Switch>
         </Router>

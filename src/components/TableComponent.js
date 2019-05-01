@@ -1,66 +1,44 @@
 import React from 'react'
-import { Table } from 'semantic-ui-react'
-import {LOGIN_PAGE, path} from "../Views";
-import SpecialLink from "./Link";
-import {connect} from 'react-redux';
-import {bindActionCreators} from "redux";
-import {makeWarning} from "../store/Actions";
+import {Table, Button, Icon} from 'semantic-ui-react'
+import history from "../History";
+import {CHART_PAGE} from "../Views";
 
-// const tableData = [
-//     { name: 'Jimmy', status: 'Requires Action', notes: undefined },
-//     { name: 'Jamie', status: undefined, notes: 'Hostile' },
-//     { name: 'Jill', status: undefined, notes: undefined },
-// ];
-//
-// const headerRow = ['PID', '%MEM', '%CPU'];
-//
-// const renderBodyRow = ({ name, status, notes }, i) => ({
-//     key: name || `row-${i}`,
-//     cells: [
-//         name ? {key: 'link', content: <SpecialLink path={path + LOGIN_PAGE} label={name}/>} : name,
-//         status ? { key: 'status', icon: 'attention', content: status } : 'Unknown',
-//         notes ? { key: 'notes', icon: 'attention', content: notes, warning: true } : 'None',
-//     ]
-// });
-// {/*<Table celled headerRow={this.props.headerRow} renderBodyRow={renderBodyRow} tableData={tableData} />*/}
-//
-// const TableComponent = () => (
-// );
-//
-// export default TableComponent;
-
-
-class TableComponent extends React.Component{
-    constructor(props){
+class TableComponent extends React.Component {
+    constructor(props) {
         super(props);
-
     }
 
-    renderBodyRow = ({ name, value, observable }, i) => ({
+    click = (name) => {
+        history.push({
+            pathname: this.props.link + CHART_PAGE,
+            state: {
+                url: this.props.urls[name],
+                field: this.props.fields[name],
+                label: this.props.labels[name]
+            }
+        });
+    };
+
+    renderBodyRow = ({name, value, observable}, i) => ({
         key: name + `row-${i}`,
         cells: [
-            name ? { key: 'name',  content: name } : 'None',
-            value ? { key: 'value', content: value } : 'Unknown',
-            observable ? {key: 'chart', content: <SpecialLink path={path + LOGIN_PAGE} label={name}/>} : ''
+            name ? {key: 'name', content: name} : 'None',
+            value ? {key: 'value', content: value} : 'Unknown',
+            observable ? {
+                key: 'chart', content:
+                    <Button icon onClick={this.click.bind(this, name)}>
+                        <Icon name='chart area'/>
+                    </Button>
+            } : ''
         ]
     });
 
-    render(){
-        return(
-            <Table {...this.props} celled renderBodyRow={this.renderBodyRow} />
-
+    render() {
+        return (
+            <Table {...this.props} celled renderBodyRow={this.renderBodyRow}/>
         )
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-    };
-};
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-    }
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TableComponent);
+export default TableComponent;

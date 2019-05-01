@@ -3,9 +3,7 @@ export const INITIAL_STATE = 'INITIAL_STATE';
 export const initialState = {
   type: INITIAL_STATE,
   login: '',
-  message: '',
-  chartR: 1,
-  dots: []
+  message: ''
 };
 
 // for login
@@ -16,15 +14,11 @@ export const LOGOUT = 'LOGOUT';
 export const REGISTRATION_COMPLETED = 'REGISTRATION_COMPLETED';
 export const REGISTRATION_FAILED = 'REGISTRATION_FAILED';
 // for chart
-export const DOT_ADDED = 'DOT_ADDED';
 export const UPDATE_CHART = 'UPDATE_CHART';
 export const UPDATE_CHART_FINISHED = 'UPDATE_CHART_FINISHED';
-// for table
-export const DOTS_LOADED = 'DOTS_LOADED';
 
-
-export const SERVERS_LOADED = 'SERVERS_LOADED';
-export const RAM_DATA_LOADED = 'RAM_DATA_LOADED';
-export const DATA_LOADED = 'DATA_LOADED';
 export const SINGLE_DATA_LOADED = 'SINGLE_DATA_LOADED';
 export const COMPOSITE_DATA_LOADED = 'COMPOSITE_DATA_LOADED';
+export const CHART_DATA_LOADED = 'CHART_DATA_LOADED';
+
+export const CLEAN = 'CLEAN';

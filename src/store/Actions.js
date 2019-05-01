@@ -3,9 +3,10 @@ import {
     LOGOUT,
     REGISTRATION_COMPLETED,
     REGISTRATION_FAILED,
-    WARNING,  COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED
+    WARNING, COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED, CLEAN, CHART_DATA_LOADED
 } from "./States";
 import history from "../History";
+import {LOGIN_URL, LOGOUT_URL, REFRESH_TOKENS_URL, REGISTRATION_URL} from "../ApiUrls";
 import {MAIN_PAGE} from "../Views";
 
 export function makeWarning(message) {
@@ -15,79 +16,61 @@ export function makeWarning(message) {
     }
 }
 
-export function loadDataBad() {
+export function cleanStore(toRemove) {
+    return {
+        type: CLEAN,
+        payload: toRemove
+    }
+}
+
+export function login(login, password) {
+    refreshTokens();
     return (dispatch) => {
-        fetch('http://185.43.5.178/server/rest/secured/data/composite/after?server_id=1&identifier=Process 5542&time=0', {
-            method: 'GET',
-            withCredentials: true
+        let data = new URLSearchParams();
+        data.append('login', login);
+        data.append('password', password);
+
+        fetch(LOGIN_URL, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            credentials: 'include'
+
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
         })
-            .then((response) => {
-                return response.json()
+            .then(response => {
+                window.sessionStorage.setItem('isAuthorised', 'true');
+                window.sessionStorage.setItem('login', login);
+                window.sessionStorage.setItem('accessToken', response.accessToken);
+                window.sessionStorage.setItem('refreshToken', response.refreshToken);
+                window.sessionStorage.setItem('expires_in', response.expires_in);
+
+                history.push(MAIN_PAGE);
+
+                dispatch({
+                    type: LOGIN_SUCCEED,
+                    payload: login
+                });
             })
-            // .then((response) => {
-            //     dispatch({
-            //         type: DATA_READY,
-            //         payload: response
-            //     });
-            // })
-            .catch(function (error) {
+            .catch(error => {
                 dispatch({
                     type: WARNING,
-                    payload: 'There has been a problem while fetching: ' + error.message
+                    payload: 'There has been a problem while logging: ' + error.message
                 });
             });
     }
 }
 
-export function login(login, password) {
-    return (dispatch) => {
-        // let data = new URLSearchParams();
-        // data.append('login', login);
-        // data.append('password', password);
-        //
-        // fetch('http://185.43.5.178/server/rest/login', {
-        //     method: 'POST',
-        //     body: data,
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded'
-        //     },
-        //     credentials: 'include'
-        //
-        // }).then(response => {
-        //     if (response.ok) {
-        //         return response.json();
-        //     }
-        //     throw new Error('Network response was not ok.');
-        // })
-        //     .then(response => {
-        //         console.log(response);
-        //         console.log(JSON.stringify(response));
-        window.sessionStorage.setItem('isAuthorised', 'true');
-        window.sessionStorage.setItem('login', login);
-        // window.sessionStorage.setItem('accessToken', response.accessToken);
-        // window.sessionStorage.setItem('refreshToken', response.refreshToken);
-        // window.sessionStorage.setItem('expires_in', response.expires_in);
-
-        history.push(MAIN_PAGE);
-
-        dispatch({
-            type: LOGIN_SUCCEED,
-            payload: login
-        });
-        //         })
-        //         .catch(error => {
-        //             dispatch({
-        //                 type: WARNING,
-        //                 payload: 'There has been a problem while logging: ' + error.message
-        //             });
-        //         });
-    }
-}
-
 export function logout() {
-    // Math.round((new Date()).getTime() / 1000);
+    refreshTokens();
     return (dispatch) => {
-        fetch('http://185.43.5.178/server/rest/secured/logout', {
+        fetch(LOGOUT_URL, {
             method: 'POST',
             body: '',
             headers: {
@@ -110,12 +93,12 @@ export function logout() {
     }
 }
 
-export function refreshTokens() {
-    return (dispatch) => {
+function refreshTokens() {
+    if (Math.round((new Date()).getTime() / 1000) >= window.sessionStorage.getItem('expires_in')) {
         let data = new URLSearchParams();
         data.append('refreshToken', window.sessionStorage.getItem('refreshToken'));
 
-        fetch('http://185.43.5.178/server/rest/secured/refresh-tokens', {
+        fetch(REFRESH_TOKENS_URL, {
             method: 'POST',
             body: data,
             headers: {
@@ -123,7 +106,6 @@ export function refreshTokens() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             credentials: 'include'
-
         }).then(response => {
             if (response.ok) {
                 return response.json();
@@ -133,90 +115,84 @@ export function refreshTokens() {
             window.sessionStorage.setItem('accessToken', response.accessToken);
             window.sessionStorage.setItem('refreshToken', response.refreshToken);
             window.sessionStorage.setItem('expires_in', response.expires_in);
-            history.push(MAIN_PAGE);
-
-            dispatch({
-                type: LOGIN_SUCCEED,
-                payload: login
-            });
         })
             .catch(error => {
-                dispatch({
-                    type: WARNING,
-                    payload: 'There has been a problem while logging: ' + error.message
-                });
+                console.log(error);
             });
-
     }
 }
 
 export function loadData(url, group) {
+    refreshTokens();
     return (dispatch) => {
-        // fetch(url, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
-        //     }
-        // }).then((response) => {
-        //     return response.json()
-        // }).then((json) => {
-        let os_single = [{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":true}
-            ,{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":false}, [{"n":"Test"}]];
-        let server = [{id:1,name:"My first server",description:"Just server",ip:"190.23.24.32",port:1234,activated:true},
-            {id:2,name:"My second server",description:"Just not activated server",ip:"140.3.24.18",port:5678,activated:false}];
-       console.log(url);
-       let dataGroups = [
-           {"n": "CPU", "d": "Процессор"},
-           {"n": "RAM", "d": "Оперативная память"},
-           {"n": "HDD", "d": "Память жесткого диска"},
-           {"n": "Process", "d": "Процесс"},
-           {"n": "Net", "d": "Сеть"},
-           {"n": "OS"}];
-       let test = [
-           {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
-           {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true},
-           {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
-           {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true}
-           ];
-       let reducer = SINGLE_DATA_LOADED;
-       if (url.search('/comp/identifiers') !== -1 ) {
-           reducer = COMPOSITE_DATA_LOADED;
-       }
-       if (group === 'servers') {
-
-           dispatch({
-               type: reducer,
-               group: group,
-               payload: server
-           });
-       } else if (group === 'OS') {
-           dispatch({
-           type: reducer,
-           group: group,
-           payload: os_single
-       }); } else  if (group === 'dataGroups') {
-           dispatch({
-               type: reducer,
-               group: group,
-               payload: dataGroups
-           });
-       } else  if (group === 'Test') {
-           dispatch({
-               type: reducer,
-               group: group,
-               payload: test
-           });
-       }
-        // }).catch(error => {
-        //     dispatch({
-        //         type: WARNING,
-        //         payload: 'There has been a problem while fetching: ' + error.message
-        //     });
-        // });
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            // let os_single = [{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":true}
+            //     ,{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":false}, [{"n":"Test"}]];
+            // let server = [{id:1,name:"My first server",description:"Just server",ip:"190.23.24.32",port:1234,activated:true},
+            //     {id:2,name:"My second server",description:"Just not activated server",ip:"140.3.24.18",port:5678,activated:false}];
+            console.log('Requested url was ' + url);
+            // let dataGroups = [
+            //     {"n": "CPU", "d": "Процессор"},
+            //     {"n": "RAM", "d": "Оперативная память"},
+            //     {"n": "HDD", "d": "Память жесткого диска"},
+            //     {"n": "Process", "d": "Процесс"},
+            //     {"n": "Net", "d": "Сеть"},
+            //     {"n": "OS"}];
+            // let test = [
+            //     {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
+            //     {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true},
+            //     {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
+            //     {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true}
+            //     ];
+            let reducer = SINGLE_DATA_LOADED;
+            if (url.search('/comp/identifiers') !== -1) {
+                reducer = COMPOSITE_DATA_LOADED;
+            } else if (url.search('time=') !== -1) {
+                reducer = CHART_DATA_LOADED;
+            }
+            // if (group === 'servers') {
+            //
+            dispatch({
+                type: reducer,
+                group: group,
+                payload: json
+            });
+            // } else if (group === 'OS') {
+            //     dispatch({
+            //     type: reducer,
+            //     group: group,
+            //     payload: os_single
+            // }); } else  if (group === 'dataGroups') {
+            //     dispatch({
+            //         type: reducer,
+            //         group: group,
+            //         payload: dataGroups
+            //     });
+            // } else  if (group === 'Test') {
+            //     dispatch({
+            //         type: reducer,
+            //         group: group,
+            //         payload: test
+            //     });
+            // }
+        }).catch(error => {
+            dispatch({
+                type: WARNING,
+                payload: 'There has been a problem while fetching: ' + error.message
+            });
+        });
     }
 }
 
 export function register(login, password, email) {
+    refreshTokens();
     return (dispatch) => {
         if ((String)(login).length < 5) {
             dispatch({
@@ -224,10 +200,10 @@ export function register(login, password, email) {
                 payload: 'Login is too short. It should have at least 5 symbols'
             });
             return;
-        } else if ((String)(password).length < 4) {
+        } else if ((String)(password).length < 5) {
             dispatch({
                 type: WARNING,
-                payload: 'Password is too short. It should have at least 4 symbols'
+                payload: 'Password is too short. It should have at least 5 symbols'
             });
             return;
         }
@@ -237,7 +213,7 @@ export function register(login, password, email) {
         data.append('password', password);
         data.append('email', email);
 
-        fetch('http://185.43.5.178/server/rest/registration', {
+        fetch(REGISTRATION_URL, {
             method: 'POST',
             body: data,
             headers: {

@@ -6,7 +6,7 @@ import connect from "react-redux/es/connect/connect";
 import {Link} from "react-router-dom";
 import {MAIN_PAGE, path} from "../Views";
 
-class HomePage extends React.Component {
+class ServersPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -14,13 +14,8 @@ class HomePage extends React.Component {
             activeIndex: 0,
         };
 
-        // this.handleClick = this.handleClick.bind(this);
     }
-    // вызывается после каждой отрисовки при обновлении
-    // componentDidUpdate() {
-    //     this.props.loadData(this.props.url);
-    // }
-    // вызывается один раз после первой отрисовки
+
     componentDidMount() {
         if (this.props.servers === undefined) {
             this.props.loadData(this.props.url, 'servers');
@@ -34,8 +29,6 @@ class HomePage extends React.Component {
         this.setState({activeIndex: newIndex})
     };
     render() {
-        // to make all tabs collapsed by default you could use this shit:
-        // const {activeIndex} = this.state;
         let lines = [];
         if (this.props.servers === undefined) return null;
         for (let i = 0; i < this.props.servers.length; i++) {
@@ -49,7 +42,7 @@ class HomePage extends React.Component {
             lines.push([
                     <Accordion.Title active={this.state.activeIndex === i} index={i} key={i+1}  onClick={this.handleClick}>
                         <Icon name='dropdown'/>
-                        <Link  to={path + MAIN_PAGE + `/server/${serv.name}`}>{serv.name}</Link>
+                        <Link  to={path + MAIN_PAGE + `/server/${serv.n}`}>{serv.n}</Link>
 
                     </Accordion.Title>,
                     <Accordion.Content key={i * 1001} active={this.state.activeIndex === i}>
@@ -80,4 +73,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
+export default connect(mapStateToProps, mapDispatchToProps)(ServersPage);

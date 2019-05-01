@@ -1,109 +1,116 @@
 import React, {Component} from 'react'
-import {bindActionCreators} from "redux";
-import { loadDataBad, makeWarning} from "../store/Actions";
 import connect from "react-redux/es/connect/connect";
-
+import {withRouter} from "react-router-dom";
 import FusionCharts from 'fusioncharts';
 import TimeSeries from 'fusioncharts/fusioncharts.timeseries';
 import ReactFC from 'react-fusioncharts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.candy';
+import {bindActionCreators} from "redux";
+import {loadData} from "../store/Actions";
+
 ReactFC.fcRoot(FusionCharts, TimeSeries, FusionTheme);
+let field;
 
-class Chart extends Component{
+class Chart extends Component {
 
-  constructor(props) {
-    super(props);
-      // in chart "palettecolors": "111111"
-      this.state = {
-          timeseriesDs: {
-              type: 'timeseries',
-              renderAt: 'container',
-              width: '800',
-              height: '600',
-              dataSource: {
-                  chart: {
-                      theme: "candy",
-                      showLegend: 0
-                  },
-                  caption: {
-                      text: 'CPU usage of process with pid 5542'
-                  },
-                  yAxis: [
-                      {
-                          plot: {
-                              value: 'CPU usage',
-                              type: 'area'
-                          },
-                          title: 'CPU usage (in %)'
-                      }
-                  ],
-                  data: null
-              }
-          }
-      };
-      this.createDataTable = this.createDataTable.bind(this);
-  }
+    timerId;
 
-    createDataTable() {
-        fetch('http://185.43.5.178/server/rest/secured/data/composite/after?server_id=1&identifier=Process 5542&time=0', {
-            method: 'GET',
-            withCredentials: true,
-            headers: {
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .then((response) => {
-                return response.json()
-            }). then ((response) => {
-            let data = [];
-            response.forEach((e) => {
-                data.push([e.data[1].time, e.data[1].value]);
-            });
-            const schema = [
-                {
-                    "name": "Time",
-                    "type": "date",
-                    "format": "%b %d, %Y %H:%M:%S %p"
-                },
-                {
-                    "name": "CPU usage",
-                    "type": "number"
+    constructor(props) {
+        super(props);
+        // in chart "palettecolors": "111111"
+        field = this.props.location.state.field;
+        this.state = {
+            timeseriesDs: {
+                type: 'timeseries',
+                renderAt: 'container',
+                width: window.innerWidth / 2,
+                height: window.innerHeight / 2,
+                dataSource: {
+                    chart: {
+                        theme: "candy",
+                        showLegend: 0
+                    },
+                    caption: {
+                        text: this.props.location.state.label
+                    },
+                    yAxis: [
+                        {
+                            plot: {
+                                value: this.props.location.state.label,
+                                type: 'area'
+                            },
+                            title: this.props.location.state.label
+                        }
+                    ],
+                    data: null
                 }
-            ];
+            }
+        };
 
-            const fusionDataStore = new FusionCharts.DataStore();
-            const fusionTable = fusionDataStore.createDataTable(data, schema);
-            const timeseriesDs = Object.assign({}, this.state.timeseriesDs);
-            timeseriesDs.dataSource.data = fusionTable;
-            this.setState({
-                timeseriesDs
-            });
-        });
+        this.timerId = setInterval(() => {
+            this.updateChart();
+        }, 15000);
+    }
 
+    updateChart() {
+        let lastDate;
+        if (this.props.field !== undefined) {
+            lastDate = this.props.field.maxTime;
+        } else lastDate = 1;
+        let url = this.props.location.state.url.replace('time=', `time=${lastDate}`);
+        this.props.loadData(url, field);
     }
 
     componentDidMount() {
-        this.createDataTable();
+        this.updateChart();
     }
-  render(){
 
-    return(
-        <ReactFC {...this.state.timeseriesDs} />
-    )
-  }
+    componentWillUnmount() {
+        clearInterval(this.timerId);
+    }
+
+    render() {
+        const schema = [
+            {
+                "name": "Time",
+                "type": "date",
+                "format": "%d.%m %H:%M:%S"
+            },
+            {
+                "name": this.props.location.state.label,
+                "type": "number"
+            }
+        ];
+
+        let data = [];
+        if (this.props.field !== undefined) {
+            data = this.props.field.data;
+        }
+
+        const fusionDataStore = new FusionCharts.DataStore();
+        const fusionTable = fusionDataStore.createDataTable(data, schema);
+        const timeseriesDs = Object.assign({}, this.state.timeseriesDs);
+        timeseriesDs.dataSource.data = fusionTable;
+        // this.setState({
+        //     timeseriesDs
+        // });
+
+        return (
+            <ReactFC {...timeseriesDs} />
+        )
+    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-  };
+    return {
+        field: state[field]
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        makeWarning : bindActionCreators(makeWarning, dispatch),
-        loadDots: bindActionCreators(loadDataBad, dispatch)
+        loadData: bindActionCreators(loadData, dispatch)
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chart);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Chart));
