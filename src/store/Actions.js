@@ -24,7 +24,6 @@ export function cleanStore(toRemove) {
 }
 
 export function login(login, password) {
-    refreshTokens();
     return (dispatch) => {
         let data = new URLSearchParams();
         data.append('login', login);
@@ -35,9 +34,7 @@ export function login(login, password) {
             body: data,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'include'
-
+            }
         }).then(response => {
             if (response.ok) {
                 return response.json();
@@ -76,8 +73,7 @@ export function logout() {
             headers: {
                 'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
                 'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'include'
+            }
 
         }).then(() => {
             dispatch({
@@ -104,8 +100,7 @@ function refreshTokens() {
             headers: {
                 'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
                 'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'include'
+            }
         }).then(response => {
             if (response.ok) {
                 return response.json();
@@ -133,55 +128,18 @@ export function loadData(url, group) {
         }).then((response) => {
             return response.json()
         }).then((json) => {
-            // let os_single = [{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":true}
-            //     ,{"p":{"v":"50.138085985760405","t":1556557261924},"t":"Название","m":false}, [{"n":"Test"}]];
-            // let server = [{id:1,name:"My first server",description:"Just server",ip:"190.23.24.32",port:1234,activated:true},
-            //     {id:2,name:"My second server",description:"Just not activated server",ip:"140.3.24.18",port:5678,activated:false}];
             console.log('Requested url was ' + url);
-            // let dataGroups = [
-            //     {"n": "CPU", "d": "Процессор"},
-            //     {"n": "RAM", "d": "Оперативная память"},
-            //     {"n": "HDD", "d": "Память жесткого диска"},
-            //     {"n": "Process", "d": "Процесс"},
-            //     {"n": "Net", "d": "Сеть"},
-            //     {"n": "OS"}];
-            // let test = [
-            //     {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
-            //     {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true},
-            //     {"p":{"v":"413.43333397862426","t":1556558158989},"t":"Название","m":true},
-            //     {"p":{"v":"166.53802973905485","t":1556558158989},"t":"Название","m":true}
-            //     ];
             let reducer = SINGLE_DATA_LOADED;
             if (url.search('/comp/identifiers') !== -1) {
                 reducer = COMPOSITE_DATA_LOADED;
             } else if (url.search('time=') !== -1) {
                 reducer = CHART_DATA_LOADED;
             }
-            // if (group === 'servers') {
-            //
             dispatch({
                 type: reducer,
                 group: group,
                 payload: json
             });
-            // } else if (group === 'OS') {
-            //     dispatch({
-            //     type: reducer,
-            //     group: group,
-            //     payload: os_single
-            // }); } else  if (group === 'dataGroups') {
-            //     dispatch({
-            //         type: reducer,
-            //         group: group,
-            //         payload: dataGroups
-            //     });
-            // } else  if (group === 'Test') {
-            //     dispatch({
-            //         type: reducer,
-            //         group: group,
-            //         payload: test
-            //     });
-            // }
         }).catch(error => {
             dispatch({
                 type: WARNING,

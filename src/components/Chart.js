@@ -23,7 +23,7 @@ class Chart extends Component {
             timeseriesDs: {
                 type: 'timeseries',
                 renderAt: 'container',
-                width: window.innerWidth / 2,
+                width: this.props.width,
                 height: window.innerHeight / 2,
                 dataSource: {
                     chart: {
@@ -69,27 +69,54 @@ class Chart extends Component {
         clearInterval(this.timerId);
     }
 
-    render() {
-        const schema = [
-            {
-                "name": "Time",
-                "type": "date",
-                "format": "%d.%m %H:%M:%S"
+    schema = [
+        {
+            "name": "Time",
+            "type": "date",
+            "format": "%Y.%m.%d %H:%M:%S"
+        },
+        {
+            "name": this.props.location.state.label,
+            "type": "number"
+        }
+    ];
+    fusionDataStore = new FusionCharts.DataStore();
+    timeseriesDs = {
+        type: 'timeseries',
+        renderAt: 'container',
+        width: this.props.width,
+        height: window.innerHeight / 2,
+        dataSource: {
+            chart: {
+                theme: "candy",
+                showLegend: 0
             },
-            {
-                "name": this.props.location.state.label,
-                "type": "number"
-            }
-        ];
+            caption: {
+                text: this.props.location.state.label
+            },
+            yAxis: [
+                {
+                    plot: {
+                        value: this.props.location.state.label,
+                        type: 'area'
+                    },
+                    title: this.props.location.state.label
+                }
+            ],
+            data: null
+        }
+    };
 
+    render() {
         let data = [];
         if (this.props.field !== undefined) {
             data = this.props.field.data;
         }
 
-        const fusionDataStore = new FusionCharts.DataStore();
-        const fusionTable = fusionDataStore.createDataTable(data, schema);
-        const timeseriesDs = Object.assign({}, this.state.timeseriesDs);
+        let fusionTable = this.fusionDataStore.createDataTable(data, this.schema);
+        let timeseriesDs = Object.assign({}, this.timeseriesDs);
+        timeseriesDs.width = this.props.width;
+        timeseriesDs.height = window.innerHeight / 2;
         timeseriesDs.dataSource.data = fusionTable;
         // this.setState({
         //     timeseriesDs

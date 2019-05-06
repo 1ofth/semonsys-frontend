@@ -1,98 +1,62 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {register} from '../store/Actions';
+import {Button, Form, Segment} from "semantic-ui-react";
 
-import {makeWarning, register} from '../store/Actions';
+class RegisterComponent extends React.Component {
+    constructor(props) {
+        super(props);
 
-class RegisterComponent extends React.Component{
-  constructor(props){
-    super(props);
+        this.state = {
+            login: '',
+            password: '',
+            email: ''
+        };
 
-    this.state = {
-      login: '',
-      password: '',
-        email: ''
+    }
+
+    handleChange = (e, {name, value}) => this.setState({[name]: value});
+
+    handleSubmit = () => {
+        const {login, password} = this.state;
+        this.props.register(login, password);
     };
 
-    this.handleChange = this.handleChange.bind(this);
-  }
+    render() {
+        return (
+            <Form size='large' onSubmit={this.handleSubmit}>
+                <Segment stacked>
+                    <Form.Input required fluid icon='user' iconPosition='left' placeholder='Login'
+                                name='login' value={this.state.login} onChange={this.handleChange}/>
+                    <Form.Input
+                        required
+                        fluid
+                        icon='lock'
+                        iconPosition='left'
+                        placeholder='Password'
+                        type='password'
+                        name='password' value={this.state.password}
+                        onChange={this.handleChange}
+                    />
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    });
-  };
+                    <Form.Input name='login' value={this.state.email}
+                                fluid icon='mail' iconPosition='left' placeholder='E-mail address'/>
 
-  registerUser = (login, password, email) => event => {
-    this.props.register(login, password, email);
-  };
+                    <Button color='black' fluid size='large'>
+                        Register
+                    </Button>
+                </Segment>
+            </Form>
+        );
+    }
 
-  render(){
-    return (
-      <table className={'inputs'}>
-        <tbody>
-        <tr>
-          <td>
-            Login
-          </td>
-          <td>
-            <input
-              type='text'
-              value={this.props.login}
-              onChange={this.handleChange('login')}
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Password
-          </td>
-          <td>
-            <input
-              type='password'
-              value={this.props.password}
-              onChange={this.handleChange('password')}
-            />
-          </td>
-        </tr>
-        <tr>
-            <td>
-                Email
-            </td>
-            <td>
-                <input
-                    type='email'
-                    value={this.props.email}
-                    onChange={this.handleChange('email')}
-                />
-            </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <input
-              type='button'
-              value='Register'
-              onClick={this.registerUser(this.state.login, this.state.password, this.state.email)}
-            />
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    );
-  }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  };
-};
-
 const mapDispatchToProps = (dispatch) => {
-  return {
-    makeWarning : bindActionCreators(makeWarning, dispatch),
-    register: bindActionCreators(register, dispatch)
-  }
+    return {
+        register: bindActionCreators(register, dispatch)
+    }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegisterComponent);
+export default connect(null, mapDispatchToProps)(RegisterComponent);

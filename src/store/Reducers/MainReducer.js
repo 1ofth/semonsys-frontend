@@ -10,6 +10,9 @@ import {
     COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED, CLEAN, CHART_DATA_LOADED
 } from "../States";
 
+function addLeadingZero(num) {
+    return (num <= 9) ? ("0" + num) : num;
+}
 export default function MainReducer(state = initialState, action) {
     switch (action.type) {
         case WARNING:
@@ -24,7 +27,7 @@ export default function MainReducer(state = initialState, action) {
 
 
         case LOGOUT:
-            return {...state, message: '', login: '', dots: []};
+            return {...state, message: '', login: ''};
 
         case LOGIN_SUCCEED:
             return {...state, message: '', login: action.payload};
@@ -78,11 +81,12 @@ export default function MainReducer(state = initialState, action) {
 
                 let time = new Date(e.t);
 
-                let result = "" + (time.getDay() < 10 ? "0" + time.getDay() : time.getDay())
-                    + "." + (time.getMonth() < 10 ? "0" + time.getMonth() : time.getMonth())
-                    + " " + (time.getHours() < 10 ? "0" + time.getHours() : time.getHours())
-                    + ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes())
-                    + ":" + (time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds());
+                let result = "" + time.getFullYear()
+                    + "." + addLeadingZero(time.getMonth()+1)
+                    + "." + addLeadingZero(time.getDate())
+                    + " " + addLeadingZero(time.getHours())
+                    + ":" + addLeadingZero(time.getMinutes())
+                    + ":" + addLeadingZero(time.getSeconds());
 
                 temp.push([result, e.v]);
             });

@@ -11,14 +11,14 @@ import history from './History';
 
 import {LOGIN_PAGE, MAIN_PAGE, path, REGISTRATION_PAGE} from "./Views";
 
-import LoginPage from "./containers/LoginPage";
 import RegisterPage from './containers/RegisterPage';
-import NotFoundPage from './containers/NotFoundPage';
 import MainPage from './containers/MainPage';
 
 import MainReducer from "./store/Reducers/MainReducer";
 
 import './styles/common.css';
+import AboutPage from "./containers/AboutPage";
+import LoginPage from "./containers/LoginPage";
 
 const logger = createLogger();
 const store = createStore(MainReducer, initialState, applyMiddleware(thunk, logger));
@@ -32,11 +32,11 @@ ReactDOM.render(
     <Provider store={store}>
         <Router history={history}>
             <Switch>
-                <Route exact path={path} component={MainPage}/>
+                <Route exact path={path} component={AboutPage}/>
                 <Route path={path + LOGIN_PAGE} component={LoginPage}/>
                 <Route path={path + REGISTRATION_PAGE} component={RegisterPage}/>
                 <Route path={path + MAIN_PAGE} component={MainPage}/>
-                <Route component={NotFoundPage}/>
+                <Route component={AboutPage}/>
             </Switch>
         </Router>
     </Provider>,

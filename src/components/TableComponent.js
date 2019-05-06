@@ -4,10 +4,6 @@ import history from "../History";
 import {CHART_PAGE} from "../Views";
 
 class TableComponent extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     click = (name) => {
         history.push({
             pathname: this.props.link + CHART_PAGE,
