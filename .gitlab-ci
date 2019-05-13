@@ -1,0 +1,31 @@
+image: owncloudci/nodejs
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - deploy	
+  
+before_script:
+ - apt-get update -qq && apt-get install -y -qq sshpass
+ - npm install -g serve
+ 
+deploy:
+  stage: deploy
+  environment: Staging
+  only:
+    - master
+  script:
+	- npm install
+    - REACT_APP_API_URL=http://$BE_IP:$BE_PORT npm run build
+    - cd build/
+    - ls
+    - sshpass -V
+    - export SSHPASS=$CI_PASSWORD
+    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "pkill -f node.*serve"
+    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "rm -rf $FE_HOME"
+    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "mkdir -p $FE_HOME"
+    - sshpass -e scp -o stricthostkeychecking=no -r * $CI_USERNAME@$CI_IP:$FE_HOME
+    - CURRENT_DATE=`date '+%Y%m%d.%H%M%S'`
+    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "nohup serve -l $FE_PORT -s $FE_HOME > $FE_HOME$CURRENT_DATE.log 2>&1 &"
