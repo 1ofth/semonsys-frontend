@@ -5,7 +5,7 @@ cache:
     - node_modules/
 
 stages:
-  - deploy	
+  - deploy
   
 before_script:
  - apt-get update -qq && apt-get install -y -qq sshpass
@@ -17,7 +17,7 @@ deploy:
   only:
     - master
   script:
-	- npm install
+    - npm install
     - REACT_APP_API_URL=http://$BE_IP:$BE_PORT npm run build
     - cd build/
     - ls
