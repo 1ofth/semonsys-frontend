@@ -23,7 +23,7 @@ deploy:
     - ls
     - sshpass -V
     - export SSHPASS=$CI_PASSWORD
-    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "pkill -f node.*serve"
+    - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "if pgrep node.*serve; then pkill -f node.*serve; fi"
     - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "rm -rf $FE_HOME"
     - sshpass -e ssh -o stricthostkeychecking=no $CI_USERNAME@$CI_IP "mkdir -p $FE_HOME"
     - sshpass -e scp -o stricthostkeychecking=no -r * $CI_USERNAME@$CI_IP:$FE_HOME
