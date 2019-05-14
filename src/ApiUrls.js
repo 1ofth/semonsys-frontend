@@ -9,3 +9,5 @@ export const LOGIN_URL = `${process.env.REACT_APP_API_URL}/server/rest/login`;
 export const LOGOUT_URL = `${process.env.REACT_APP_API_URL}/server/rest/secured/logout`;
 export const REGISTRATION_URL = `${process.env.REACT_APP_API_URL}/server/rest/registration`;
 export const REFRESH_TOKENS_URL = `${process.env.REACT_APP_API_URL}/server/rest/secured/refresh-tokens`;
+export const SERVER_ACTIVATE_URL = `${process.env.REACT_APP_API_URL}/server/rest/secured/server/activate?name=`;
+export const SERVER_ADD_URL = `${process.env.REACT_APP_API_URL}/server/rest/secured/server`;

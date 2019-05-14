@@ -6,7 +6,7 @@ import {
     WARNING, COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED, CLEAN, CHART_DATA_LOADED
 } from "./States";
 import history from "../History";
-import {LOGIN_URL, LOGOUT_URL, REFRESH_TOKENS_URL, REGISTRATION_URL} from "../ApiUrls";
+import {LOGIN_URL, LOGOUT_URL, REFRESH_TOKENS_URL, REGISTRATION_URL, SERVER_ADD_URL} from "../ApiUrls";
 import {MAIN_PAGE} from "../Views";
 
 export function makeWarning(message) {
@@ -79,6 +79,33 @@ export function logout() {
             dispatch({
                 type: LOGOUT
             });
+        })
+            .catch(error => {
+                dispatch({
+                    type: WARNING,
+                    payload: 'There has been a problem while fetching: ' + error.message
+                });
+            });
+    }
+}
+
+export function addServer(name, ip, port, description) {
+    refreshTokens();
+    return (dispatch) => {
+        let data = new URLSearchParams();
+        data.append('name', name);
+        data.append('ip', ip);
+        data.append('port', port);
+        data.append('description', description);
+
+        fetch(SERVER_ADD_URL, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+
         })
             .catch(error => {
                 dispatch({

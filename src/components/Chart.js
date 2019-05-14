@@ -14,7 +14,7 @@ let field;
 class Chart extends Component {
 
     timerId;
-
+    dataTableId;
     constructor(props) {
         super(props);
         // in chart "palettecolors": "111111"

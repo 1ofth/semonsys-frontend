@@ -66,7 +66,7 @@ export default function MainReducer(state = initialState, action) {
                 temp = temp.concat([action.payload]);
             }
 
-            return {...state, [action.group]: temp};
+            return {...state, message: '', [action.group]: temp};
         }
 
         case CHART_DATA_LOADED: {
@@ -91,17 +91,15 @@ export default function MainReducer(state = initialState, action) {
                 temp.push([result, e.v]);
             });
 
-            return {...state, [action.group]: {data: temp, maxTime: maxTime}};
+            return {...state, message: '', [action.group]: {data: temp, maxTime: maxTime}};
         }
 
 
         case CLEAN: {
-            if (action.payload !== undefined) {
-                for (let i = 0; i < action.payload.length; i++) {
-                    delete state[action.payload[i]];
-                }
+            for(let value of action.payload) {
+                delete state[value];
             }
-            return {...state};
+            return {...state, message: ''};
         }
 
         default:
