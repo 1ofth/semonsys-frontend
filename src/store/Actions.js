@@ -6,7 +6,7 @@ import {
     WARNING, COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED, CLEAN, CHART_DATA_LOADED
 } from "./States";
 import history from "../History";
-import {LOGIN_URL, LOGOUT_URL, REFRESH_TOKENS_URL, REGISTRATION_URL, SERVER_ADD_URL} from "../ApiUrls";
+import {LOGIN_URL, LOGOUT_URL, REFRESH_TOKENS_URL, REGISTRATION_URL, SERVERS_URL} from "../ApiUrls";
 import {MAIN_PAGE} from "../Views";
 
 export function makeWarning(message) {
@@ -89,7 +89,40 @@ export function logout() {
     }
 }
 
-export function addServer(name, ip, port, description) {
+export function activateOrDeleteServer(method, url, serverName) {
+    refreshTokens();
+    return (dispatch) => {
+        fetch(url.concat(`?name=${serverName}`), {
+            method: method,
+            headers: {
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+            }
+        }).then(() => {
+            return fetch(SERVERS_URL, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+                }
+            })
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            dispatch({
+                type: SINGLE_DATA_LOADED,
+                group: 'servers',
+                payload: json
+            });
+        })
+            .catch(error => {
+                dispatch({
+                    type: WARNING,
+                    payload: error.message
+                });
+            });
+    }
+}
+
+export function addServer(method, name, ip, port, description) {
     refreshTokens();
     return (dispatch) => {
         let data = new URLSearchParams();
@@ -98,14 +131,28 @@ export function addServer(name, ip, port, description) {
         data.append('port', port);
         data.append('description', description);
 
-        fetch(SERVER_ADD_URL, {
-            method: 'POST',
+        fetch(SERVERS_URL, {
+            method: method,
             body: data,
             headers: {
                 'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-
+        }).then(() => {
+            return fetch(SERVERS_URL, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
+                }
+            })
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            dispatch({
+                type: SINGLE_DATA_LOADED,
+                group: 'servers',
+                payload: json
+            });
         })
             .catch(error => {
                 dispatch({

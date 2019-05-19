@@ -4,8 +4,6 @@ import {
     LOGOUT,
     REGISTRATION_COMPLETED,
     REGISTRATION_FAILED,
-    UPDATE_CHART,
-    UPDATE_CHART_FINISHED,
     WARNING,
     COMPOSITE_DATA_LOADED, SINGLE_DATA_LOADED, CLEAN, CHART_DATA_LOADED
 } from "../States";
@@ -13,18 +11,11 @@ import {
 function addLeadingZero(num) {
     return (num <= 9) ? ("0" + num) : num;
 }
+
 export default function MainReducer(state = initialState, action) {
     switch (action.type) {
         case WARNING:
             return {...state, message: action.payload};
-
-
-        case UPDATE_CHART:
-            return {...state, chartR: action.payload, updateChart: true};
-
-        case UPDATE_CHART_FINISHED:
-            return {...state, updateChart: false};
-
 
         case LOGOUT:
             return {...state, message: '', login: ''};
@@ -50,7 +41,7 @@ export default function MainReducer(state = initialState, action) {
                 }
             }
 
-            return {...state, [action.group]: action.payload.concat(composite)};
+            return {...state, message: '', [action.group]: action.payload.concat(composite)};
         }
 
         case COMPOSITE_DATA_LOADED: {
@@ -82,7 +73,7 @@ export default function MainReducer(state = initialState, action) {
                 let time = new Date(e.t);
 
                 let result = "" + time.getFullYear()
-                    + "." + addLeadingZero(time.getMonth()+1)
+                    + "." + addLeadingZero(time.getMonth() + 1)
                     + "." + addLeadingZero(time.getDate())
                     + " " + addLeadingZero(time.getHours())
                     + ":" + addLeadingZero(time.getMinutes())
@@ -96,7 +87,7 @@ export default function MainReducer(state = initialState, action) {
 
 
         case CLEAN: {
-            for(let value of action.payload) {
+            for (let value of action.payload) {
                 delete state[value];
             }
             return {...state, message: ''};

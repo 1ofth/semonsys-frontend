@@ -15,6 +15,7 @@ class Chart extends Component {
 
     timerId;
     dataTableId;
+
     constructor(props) {
         super(props);
         // in chart "palettecolors": "111111"
@@ -53,11 +54,14 @@ class Chart extends Component {
     }
 
     updateChart() {
+
         let lastDate;
-        if (this.props.field !== undefined) {
-            lastDate = this.props.field.maxTime;
-        } else lastDate = 1;
+        if (this.props.location.state.field !== field || this.props.field === undefined) {
+            lastDate = 1;
+        } else lastDate = this.props.field.maxTime;
         let url = this.props.location.state.url.replace('time=', `time=${lastDate}`);
+        field = this.props.location.state.field;
+
         this.props.loadData(url, field);
     }
 
@@ -65,7 +69,14 @@ class Chart extends Component {
         this.updateChart();
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.location.state.field !== prevProps.location.state.field) {
+            this.updateChart();
+        }
+    }
+
     componentWillUnmount() {
+        console.log('unmount chart');
         clearInterval(this.timerId);
     }
 
@@ -100,7 +111,7 @@ class Chart extends Component {
                         value: this.props.location.state.label,
                         type: 'area'
                     },
-                    title: this.props.location.state.label
+                    title: 'Kb'
                 }
             ],
             data: null
@@ -108,6 +119,9 @@ class Chart extends Component {
     };
 
     render() {
+        console.log('render chart');
+
+
         let data = [];
         if (this.props.field !== undefined) {
             data = this.props.field.data;
@@ -115,6 +129,10 @@ class Chart extends Component {
 
         let fusionTable = this.fusionDataStore.createDataTable(data, this.schema);
         let timeseriesDs = Object.assign({}, this.timeseriesDs);
+        const {label} = this.props.location.state;
+        timeseriesDs.dataSource.caption.text = label;
+        timeseriesDs.dataSource.caption.text = label;
+
         timeseriesDs.width = this.props.width;
         timeseriesDs.height = window.innerHeight / 2;
         timeseriesDs.dataSource.data = fusionTable;
@@ -129,6 +147,8 @@ class Chart extends Component {
 }
 
 const mapStateToProps = (state) => {
+    console.log('mapStateToProps chart');
+
     return {
         field: state[field]
     };
