@@ -110,8 +110,7 @@ class Chart extends Component {
                     plot: {
                         value: this.props.location.state.label,
                         type: 'area'
-                    },
-                    title: 'Kb'
+                    }
                 }
             ],
             data: null
@@ -126,12 +125,12 @@ class Chart extends Component {
         if (this.props.field !== undefined) {
             data = this.props.field.data;
         }
-
         let fusionTable = this.fusionDataStore.createDataTable(data, this.schema);
         let timeseriesDs = Object.assign({}, this.timeseriesDs);
         const {label} = this.props.location.state;
+        this.schema[1].name = label;
         timeseriesDs.dataSource.caption.text = label;
-        timeseriesDs.dataSource.caption.text = label;
+        timeseriesDs.dataSource.yAxis[0].plot.value = label;
 
         timeseriesDs.width = this.props.width;
         timeseriesDs.height = window.innerHeight / 2;

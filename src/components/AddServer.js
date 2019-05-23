@@ -1,9 +1,10 @@
 import React from "react";
 
-import {Modal, Form, Button, Icon, Segment} from 'semantic-ui-react';
+import {Modal, Form, Button, Icon} from 'semantic-ui-react';
 import {bindActionCreators} from "redux";
 import {addServer, loadData, makeWarning} from "../store/Actions";
 import connect from "react-redux/es/connect/connect";
+import {SERVERS_URL} from "../ApiUrls";
 
 class AddServer extends React.Component {
 
@@ -26,7 +27,7 @@ class AddServer extends React.Component {
 
     handleSubmit = () => {
         const {name, ip, port, description} = this.state;
-        this.props.addServer('POST', name, ip, port, description);
+        this.props.addServer('POST', SERVERS_URL, name, ip, port, description);
         this.setState({showModal: false});
     };
 

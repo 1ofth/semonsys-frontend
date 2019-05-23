@@ -1,8 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {register} from '../store/Actions';
+import {login, register} from '../store/Actions';
 import {Button, Form, Segment} from "semantic-ui-react";
+import history from "../History";
+import {MAIN_PAGE} from "../Views";
 
 class RegisterComponent extends React.Component {
     constructor(props) {
@@ -14,6 +16,13 @@ class RegisterComponent extends React.Component {
             email: ''
         };
 
+    }
+
+    componentDidUpdate() {
+        if (this.props.login !== '' && this.props.login !== undefined) {
+            console.log(this.props.login);
+            this.props.loginU(this.props.login, this.state.password);
+        }
     }
 
     handleChange = (e, {name, value}) => this.setState({[name]: value});
@@ -40,7 +49,7 @@ class RegisterComponent extends React.Component {
                         onChange={this.handleChange}
                     />
 
-                    <Form.Input name='login' value={this.state.email}
+                    <Form.Input name='email' value={this.state.email} type={'email'} onChange={this.handleChange}
                                 fluid icon='mail' iconPosition='left' placeholder='E-mail address'/>
 
                     <Button color='black' fluid size='large'>
@@ -53,10 +62,17 @@ class RegisterComponent extends React.Component {
 
 }
 
+const mapStateToProps = (state) => {
+    return {
+        login: state.login
+    };
+};
+
 const mapDispatchToProps = (dispatch) => {
     return {
+        loginU: bindActionCreators(login, dispatch),
         register: bindActionCreators(register, dispatch)
     }
 };
 
-export default connect(null, mapDispatchToProps)(RegisterComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterComponent);

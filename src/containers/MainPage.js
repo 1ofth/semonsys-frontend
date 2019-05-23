@@ -3,9 +3,10 @@ import {Segment} from 'semantic-ui-react'
 import {Route, Switch} from "react-router-dom";
 import HeaderMenu from "../components/HeaderMenu";
 import history from "../History";
-import {path, LOGIN_PAGE} from "../Views";
+import {path, LOGIN_PAGE, ACCOUNT_PAGE} from "../Views";
 import DataPage from "./DataPage";
 import ServersPage from "./ServersPage";
+import AccountPage from "./AccountPage";
 
 export default class MainPage extends React.Component {
     render() {
@@ -24,8 +25,7 @@ export default class MainPage extends React.Component {
                             {/*<ServersPage {...props} url={SERVERS_URL}/>}/>*/}
                         <Route path={this.props.match.path} exact component={ServersPage}/>
                         <Route path={this.props.match.path + '/server/:serverName'} component={DataPage}/>
-                        {/* @TODO */ }
-                        {/*<Route path={this.props.match.path + ACCOUNT_PAGE} component={AccountPage}/>*/}
+                        <Route path={this.props.match.path + ACCOUNT_PAGE} component={AccountPage}/>
                     </Switch>
                 </Segment>
             </div>

@@ -5,10 +5,15 @@ import {ACCOUNT_PAGE, MAIN_PAGE, path} from "../Views";
 import {Image, Menu, Container, Button} from 'semantic-ui-react'
 import history from "../History";
 import {logout} from "../store/Actions";
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
 
 class HeaderMenu extends Component {
     logOut = () => {
-        logout();
+        this.props.logout();
+        window.sessionStorage.setItem('accessToken', '');
+        window.sessionStorage.setItem('refreshToken', '');
+        window.sessionStorage.setItem('expires_in', '');
         window.sessionStorage.setItem('isAuthorised', 'false');
         window.sessionStorage.setItem('login', '');
         history.push(path);
@@ -37,4 +42,10 @@ class HeaderMenu extends Component {
     }
 }
 
-export default withRouter(HeaderMenu);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout: bindActionCreators(logout, dispatch)
+    }
+};
+
+export default withRouter(connect(null, mapDispatchToProps)(HeaderMenu));

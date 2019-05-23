@@ -52,7 +52,7 @@ class ServerDataForm extends React.Component {
 
     save = () => {
         const {name, ip, port, description} = this.state;
-        this.props.saveServer('PUT', name, ip, port, description);
+        this.props.saveServer('PUT', SERVERS_URL + "/" + this.props.server.n, name, ip, port, description);
     };
 
     generatePanels = () => {

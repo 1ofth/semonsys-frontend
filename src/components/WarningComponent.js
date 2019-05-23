@@ -4,7 +4,7 @@ import {Message} from "semantic-ui-react";
 
 class WarningComponent extends React.Component {
     render() {
-        if (this.props.warning === '') {
+        if (this.props.warning === undefined || this.props.warning === '') {
             return null;
         } else {
             return <Message negative>

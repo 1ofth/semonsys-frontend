@@ -18,7 +18,7 @@ export default function MainReducer(state = initialState, action) {
             return {...state, message: action.payload};
 
         case LOGOUT:
-            return {...state, message: '', login: ''};
+            return {initialState};
 
         case LOGIN_SUCCEED:
             return {...state, message: '', login: action.payload};

@@ -97,13 +97,20 @@ export function activateOrDeleteServer(method, url, serverName) {
             headers: {
                 'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
             }
+        }).then(response => {
+            console.log(response);
+            if (response.ok) {
+                return response;//return Promise.resolve(response)
+            } else {
+                throw response;// return Promise.reject(new Error(response.statusText))
+            }
         }).then(() => {
             return fetch(SERVERS_URL, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
                 }
-            })
+            });
         }).then((response) => {
             return response.json()
         }).then((json) => {
@@ -112,17 +119,18 @@ export function activateOrDeleteServer(method, url, serverName) {
                 group: 'servers',
                 payload: json
             });
-        })
-            .catch(error => {
+        }).catch(error => {
+            error.text().then(errorMessage => {
                 dispatch({
                     type: WARNING,
-                    payload: error.message
+                    payload: errorMessage
                 });
             });
+        });
     }
 }
 
-export function addServer(method, name, ip, port, description) {
+export function addServer(method, url, name, ip, port, description) {
     refreshTokens();
     return (dispatch) => {
         let data = new URLSearchParams();
@@ -131,12 +139,19 @@ export function addServer(method, name, ip, port, description) {
         data.append('port', port);
         data.append('description', description);
 
-        fetch(SERVERS_URL, {
+        fetch(url, {
             method: method,
             body: data,
             headers: {
                 'Authorization': 'Bearer ' + window.sessionStorage.getItem('accessToken'),
                 'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            console.log(response);
+            if (response.ok) {
+                return response;//return Promise.resolve(response)
+            } else {
+                throw response;// return Promise.reject(new Error(response.statusText))
             }
         }).then(() => {
             return fetch(SERVERS_URL, {
@@ -155,9 +170,11 @@ export function addServer(method, name, ip, port, description) {
             });
         })
             .catch(error => {
-                dispatch({
-                    type: WARNING,
-                    payload: 'There has been a problem while fetching: ' + error.message
+                error.text().then(errorMessage => {
+                    dispatch({
+                        type: WARNING,
+                        payload: errorMessage
+                    });
                 });
             });
     }
@@ -224,7 +241,6 @@ export function loadData(url, group) {
 }
 
 export function register(login, password, email) {
-    refreshTokens();
     return (dispatch) => {
         if ((String)(login).length < 5) {
             dispatch({
@@ -255,10 +271,6 @@ export function register(login, password, email) {
         })
             .then(response => {
                 if (response.ok) {
-                    window.sessionStorage.setItem('isAuthorised', 'true');
-                    window.sessionStorage.setItem('login', login);
-
-                    history.push(MAIN_PAGE);
 
                     dispatch({
                         type: REGISTRATION_COMPLETED,
